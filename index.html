@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Happy 6 Months, Baby</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM (UMD for standalone use) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel (Compiles JSX in browser) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Configuration -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              'serif-display': ['"Playfair Display"', 'serif'],
+              'serif-elegant': ['"Cormorant Garamond"', 'serif'],
+              'cursive': ['"Caveat"', 'cursive'],
+              'sans': ['"Montserrat"', 'sans-serif'],
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.8s ease-out forwards',
+              'scale-in': 'scaleIn 0.8s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both',
+              'float': 'float 10s ease-in-out infinite',
+              'float-delayed': 'floatDelayed 12s ease-in-out infinite',
+              'pulse-glow': 'pulseGlow 2s infinite',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              scaleIn: {
+                '0%': { transform: 'scale(0.95)', opacity: '0' },
+                '100%': { transform: 'scale(1)', opacity: '1' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
+              },
+              floatDelayed: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(20px)' },
+              },
+              pulseGlow: {
+                '0%, 100%': { boxShadow: '0 0 15px rgba(255, 215, 0, 0.4)' },
+                '50%': { boxShadow: '0 0 25px rgba(255, 215, 0, 0.7)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    
+    <style>
+      body {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #FDFBF7;
+        -webkit-font-smoothing: antialiased;
+        overscroll-behavior: none;
+      }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #E5E5E5; border-radius: 4px; }
+      
+      /* Disable default touch actions on canvas to prevent scrolling while scratching */
+      canvas { touch-action: none; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "vite": "https://aistudiocdn.com/vite@^7.2.7",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.2"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef, useCallback } = React;
+
+      // --- 1. DATA & CONSTANTS ---
+      
+      const FINAL_MESSAGE_TITLE = "you’ve revealed all my messages ❤️";
+      const FINAL_MESSAGE_BODY = `i only fall more and more in love with you and these 6 months have the best six months of my life because of you. i can’t believe that you’re mine even after such a long time of being together. thank you for being who you are, baby. thank you for being my backbone and always being there for me. you’re my favourite love song, my favourite person and my beautiful lovie. you’re so kind that it makes me kinder. you’re the poem i always wanted to write and i want to love you more and more. you’re my best friend, my love, my everything and more. i’m never taking us for granted. 
+
+love, 
+niv`;
+
+      const messagesList = [
+        "i know i don’t say it enough, but you’ve completely changed how i see the world. everything feels warmer, softer, more colorful since you came into my life. i’m not just grateful, i’m in awe of you.",
+        "the way you send me random updates about your day makes me feel like i’m actually there with you. keep doing that. it’s my favorite part of being apart, knowing you want me in every moment. you always make me feel so loved.",
+        "im not scared of commitment or the future as much as i was before. with you, everything feels possible. like we could handle anything as long as we’re doing it together. thank you for making me feel that way, baby.",
+        "thank you for being patient with me, for understanding when i’m overwhelmed, for loving me through the messy parts. you make the hard things not so hard.",
+        "you’re not just beautiful, though you are. you’re brilliant and funny and surprisingly weird in all the ways that make me feel less alone in my own weirdness.",
+        "foreplay is momentum indeed, you know what i’m talking about ;)",
+        "i wanna marry you, have kids & cats with you and die with you. you’re my greatest love story.", // Gold
+        "i’ve been practicing my teleportation skills to get to you faster. so far i’ve only managed to teleport to the fridge, but i’m getting there.",
+        "you’re the cheese to my macaroni, the peanut butter to my jelly, and the person who makes me use way too many weird metaphors.",
+        "you’re such an amazing mother stitch and snowboy. they’re immensely lucky to have you. i know ivy, jackie & wilson will love you as well.",
+        "i appreciate how you challenge me to grow while still accepting me exactly as i am. you push me to be better without making me feel inadequate. that balance is something i’ve never experienced before and i know i’ll never experience it again.",
+        "i notice every kind thing you do—the way you check in on people, how you remember small details, how you always make others feel seen. your heart is pure gold, and i’m so grateful you share it with me.",
+        "i love how thoughtful you are. the way you make presents for me, send me songs and write poems make me happy, how you anticipate what i need before i even ask and shows how much you care, and i don’t take that for granted.",
+        "there’s nothing better in the world than having a nerdy little girlfriend whose eyes light up talking about human biology and harry potter. i’m so blessed.",
+        "there’s no one in the world who can be what you are to me, who can take your place. you have me all to yourself and you always will. my baby", // Gold
+        "i love our calls. i’m waiting for the day we won’t have to schedule our calls but we can just call each other’s names from across the room.",
+        "you make me feel like i’m living in a romcom and you’ll always be my joanne. (nobody wants this reference, i need season 3 soon pls)",
+        "i love when you threaten to beat me, and i love feeling that you’re always gonna be the man of the relationship because you are superior and i would get on my knees for you",
+        "i love the games we play, you’re smart and we get it babe, i love questions and numbers. i love how you always make me feel close to you.",
+        "i love how you send me good morning texts before you've even opened your eyes. you're always thinking of me.",
+        "every time my phone buzzes, i hope it's you. and when it is, my whole day gets a little brighter.",
+        "i love who i am when i am with you. you bring out the softest, happiest parts of me that i hid for so long.",
+        "loving you is the easiest thing i've ever done. it feels like breathing—natural, necessary, and vital for my survival.", // Gold
+        "you are my favorite thought. from the moment i wake up to the second i fall asleep, you are always there in my mind.",
+        "six months down, a lifetime to go. i can't wait for all the memories we haven't even made yet.",
+        "niv is nothing without his aaradhya. barely a person."
+      ];
+
+      // Visual pattern for the 26 cards
+      const cardTypesPattern = [
+        'white', 'rose', 'mint', 'white', 'charcoal', 
+        'rose', 'gold', 'white', 'mint', 'white',
+        'charcoal', 'white', 'rose', 'white', 'gold',
+        'mint', 'white', 'charcoal', 'rose', 'white',
+        'mint', 'white', 'gold', 'rose', 'charcoal',
+        'rose'
+      ];
+
+      // Construct Card Objects
+      const CARDS = messagesList.map((msg, index) => {
+        const type = cardTypesPattern[index] || 'white';
+        const isSpecial = type === 'gold';
+        // Format label as 01, 02...
+        const num = index + 1;
+        const label = num < 10 ? `0${num}` : `${num}`;
+        
+        return {
+          id: index,
+          label, // We won't display this on the card face per request, but good for data
+          message: msg,
+          type,
+          isSpecial,
+        };
+      });
+
+
+      // --- 2. CONFETTI COMPONENT ---
+      const Confetti = () => {
+        const canvasRef = useRef(null);
+
+        useEffect(() => {
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+
+          // Set canvas to full screen
+          const resize = () => {
+             canvas.width = window.innerWidth;
+             canvas.height = window.innerHeight;
+          };
+          resize();
+          window.addEventListener('resize', resize);
+
+          const particles = [];
+          const colors = ['#FFB6C1', '#98D8C8', '#FFD700', '#D8BFD8', '#FF69B4'];
+
+          // Create particles
+          for (let i = 0; i < 150; i++) {
+            particles.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * canvas.height - canvas.height,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              size: Math.random() * 5 + 2,
+              speedY: Math.random() * 3 + 2,
+              speedX: Math.random() * 2 - 1,
+              angle: Math.random() * 360,
+              spin: Math.random() * 0.2 - 0.1
+            });
+          }
+
+          let animationId;
+          const animate = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p) => {
+              p.y += p.speedY;
+              p.x += Math.sin(p.angle) * 2;
+              p.angle += p.spin;
+              
+              // Recycle particles
+              if (p.y > canvas.height) {
+                p.y = -10;
+                p.x = Math.random() * canvas.width;
+              }
+              
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              ctx.rotate(p.angle);
+              ctx.fillStyle = p.color;
+              ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+              ctx.restore();
+            });
+            animationId = requestAnimationFrame(animate);
+          };
+          animate();
+
+          return () => {
+            window.removeEventListener('resize', resize);
+            cancelAnimationFrame(animationId);
+          };
+        }, []);
+
+        return React.createElement('canvas', {
+          ref: canvasRef,
+          className: "fixed inset-0 pointer-events-none z-[60]"
+        });
+      };
+
+
+      // --- 3. SCRATCH CARD COMPONENT ---
+      const ScratchCard = ({ data, isRevealed, onReveal }) => {
+        const canvasRef = useRef(null);
+        const containerRef = useRef(null);
+        const [isScratching, setIsScratching] = useState(false);
+        const [internalRevealed, setInternalRevealed] = useState(isRevealed);
+
+        // Sync internal state if parent updates (e.g. loading from local storage)
+        useEffect(() => {
+          setInternalRevealed(isRevealed);
+        }, [isRevealed]);
+
+        const initCanvas = useCallback(() => {
+          const canvas = canvasRef.current;
+          const container = containerRef.current;
+          if (!canvas || !container) return;
+
+          // If revealed, just clear it
+          if (internalRevealed) {
+            const ctx = canvas.getContext('2d');
+            if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+            return;
+          }
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+
+          const rect = container.getBoundingClientRect();
+          const dpr = window.devicePixelRatio || 1;
+
+          canvas.width = rect.width * dpr;
+          canvas.height = rect.height * dpr;
+          ctx.scale(dpr, dpr);
+
+          // Draw the scratch-off layer
+          ctx.fillStyle = '#E5E0D8'; // Elegant warm gray
+          ctx.fillRect(0, 0, rect.width, rect.height);
+          
+          // Setup for scratching (erasing)
+          ctx.globalCompositeOperation = 'destination-out';
+        }, [internalRevealed]);
+
+        useEffect(() => {
+          initCanvas();
+          // Handle resize
+          const timer = setTimeout(initCanvas, 100);
+          window.addEventListener('resize', initCanvas);
+          return () => {
+            window.removeEventListener('resize', initCanvas);
+            clearTimeout(timer);
+          }
+        }, [initCanvas]);
+
+        const checkRevealProgress = () => {
+          const canvas = canvasRef.current;
+          if (!canvas || internalRevealed) return;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const pixels = imageData.data;
+          let transparentPixels = 0;
+          
+          // Count transparent pixels
+          for (let i = 0; i < pixels.length; i += 4) {
+            if (pixels[i + 3] < 128) { 
+              transparentPixels++;
+            }
+          }
+
+          const percent = (transparentPixels / (pixels.length / 4)) * 100;
+          
+          // If > 60% cleared, auto-reveal the rest
+          if (percent > 60) {
+            setInternalRevealed(true);
+            onReveal(data.id);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        };
+
+        const handleScratch = (x, y) => {
+          const canvas = canvasRef.current;
+          const container = containerRef.current;
+          if (!canvas || !container || internalRevealed) return;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+
+          const rect = container.getBoundingClientRect();
+          const offsetX = x - rect.left;
+          const offsetY = y - rect.top;
+
+          ctx.beginPath();
+          ctx.arc(offsetX, offsetY, 35, 0, Math.PI * 2); // Brush size
+          ctx.fill();
+        };
+
+        // Mouse Events
+        const handleMouseDown = (e) => {
+          setIsScratching(true);
+          handleScratch(e.clientX, e.clientY);
+        };
+        const handleMouseMove = (e) => {
+          if (!isScratching) return;
+          handleScratch(e.clientX, e.clientY);
+        };
+        const handleMouseUp = () => {
+          setIsScratching(false);
+          checkRevealProgress();
+        };
+
+        // Touch Events
+        const handleTouchStart = (e) => {
+          setIsScratching(true);
+          const touch = e.touches[0];
+          handleScratch(touch.clientX, touch.clientY);
+        };
+        const handleTouchMove = (e) => {
+          if (!isScratching) return;
+          // Prevent scrolling while scratching
+          if(e.cancelable) e.preventDefault(); 
+          const touch = e.touches[0];
+          handleScratch(touch.clientX, touch.clientY);
+        };
+        const handleTouchEnd = () => {
+          setIsScratching(false);
+          checkRevealProgress();
+        };
+
+        // Styles based on card type
+        const getCardStyles = () => {
+          switch (data.type) {
+            case 'rose': return 'bg-[#FFDEE6] text-[#4A2A30]';
+            case 'mint': return 'bg-[#D1EBE1] text-[#1D3B31]';
+            case 'charcoal': return 'bg-[#2E2E2E] text-[#F5F5F5]';
+            case 'gold': return 'bg-[#F9DF88] text-[#423A18]';
+            case 'white': default: return 'bg-white text-[#2A2A2A] border border-[#EBEBEB]';
+          }
+        };
+
+        const getGlowStyle = () => {
+          if (internalRevealed) return '';
+          if (data.type === 'gold') return 'animate-pulse shadow-[0_0_25px_rgba(249,223,136,0.6)]';
+          return 'hover:-translate-y-1 transition-transform duration-300 shadow-sm';
+        };
+
+        // Font logic for message fit - REFINED FOR BETTER FIT
+        const len = data.message.length;
+        let textSizeClass = '';
+        
+        // Revised thresholds and sizes to accommodate long text
+        if (len < 30) textSizeClass = 'text-2xl md:text-3xl';
+        else if (len < 60) textSizeClass = 'text-xl md:text-2xl';
+        else if (len < 120) textSizeClass = 'text-lg md:text-xl';
+        else if (len < 180) textSizeClass = 'text-base md:text-lg'; // Smaller for long texts
+        else textSizeClass = 'text-sm md:text-base leading-tight'; // Smallest for very long texts
+
+        return (
+          <div 
+            ref={containerRef}
+            className={`relative aspect-square w-full select-none overflow-hidden rounded-sm transition-all duration-500 ease-in-out ${getCardStyles()} ${getGlowStyle()}`}
+          >
+            {/* The Hidden Message */}
+            <div className={`absolute inset-0 flex items-center justify-center p-3 md:p-4 text-center transition-opacity duration-500 ${internalRevealed ? 'opacity-100' : 'opacity-0'}`}>
+               <div className="w-full h-full flex items-center justify-center">
+                  <p className={`font-cursive font-medium ${textSizeClass} lowercase`}>
+                    {data.message}
+                  </p>
+               </div>
+            </div>
+
+            {/* The Scratch Canvas */}
+            <canvas
+              ref={canvasRef}
+              className={`absolute inset-0 z-10 w-full h-full touch-none cursor-crosshair rounded-sm transition-opacity duration-700 ${internalRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            />
+          </div>
+        );
+      };
+
+
+      // --- 4. MAIN APPLICATION ---
+      const App = () => {
+        const [scratchedIds, setScratchedIds] = useState([]);
+        const [showFinalModal, setShowFinalModal] = useState(false);
+        const [isLoaded, setIsLoaded] = useState(false);
+
+        // Load progress from LocalStorage
+        useEffect(() => {
+          const saved = localStorage.getItem('scratchedCards_v2'); 
+          if (saved) {
+            try {
+              const parsed = JSON.parse(saved);
+              setScratchedIds(parsed);
+            } catch (e) {
+              console.error("Failed to load progress", e);
+            }
+          }
+          setIsLoaded(true);
+        }, []);
+
+        // Check for completion
+        useEffect(() => {
+          if (isLoaded && scratchedIds.length === CARDS.length && scratchedIds.length > 0) {
+            const timer = setTimeout(() => {
+              setShowFinalModal(true);
+            }, 1000);
+            return () => clearTimeout(timer);
+          }
+        }, [scratchedIds, isLoaded]);
+
+        const handleReveal = (id) => {
+          if (!scratchedIds.includes(id)) {
+            const newIds = [...scratchedIds, id];
+            setScratchedIds(newIds);
+            localStorage.setItem('scratchedCards_v2', JSON.stringify(newIds));
+          }
+        };
+
+        if (!isLoaded) return <div className="min-h-screen bg-[#FDFBF7]" />;
+
+        const progressPercentage = (scratchedIds.length / CARDS.length) * 100;
+
+        return (
+          <div className="min-h-screen bg-[#FDFBF7] text-[#2A2A2A] flex flex-col font-sans selection:bg-[#FFD1DC] selection:text-[#2A2A2A] relative overflow-hidden">
+            
+            {/* Ambient Background Blobs */}
+            <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
+               <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#FFD1DC] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-float"></div>
+               <div className="absolute top-[20%] right-[-10%] w-[400px] h-[400px] bg-[#E0F2F1] rounded-full mix-blend-multiply filter blur-[80px] opacity-30 animate-float-delayed"></div>
+               <div className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] bg-[#FFF8E1] rounded-full mix-blend-multiply filter blur-[120px] opacity-40"></div>
+            </div>
+
+            {/* Confetti Overlay */}
+            {showFinalModal && <Confetti />}
+
+            {/* Header Section */}
+            <header className="pt-12 pb-10 px-6 text-center z-10 relative">
+              <h1 className="text-4xl md:text-6xl font-serif-display italic font-medium tracking-tight mb-3 text-[#1A1A1A]">
+                happy 6 months, baby
+              </h1>
+              <p className="text-xs md:text-sm text-gray-500 uppercase tracking-[0.2em] mb-8 font-light">
+                reveal your messages
+              </p>
+              
+              {/* Progress Bar */}
+              <div className="max-w-xs mx-auto w-full flex flex-col items-center">
+                 <div className="w-full h-1.5 bg-[#EAEAEA] rounded-full overflow-hidden relative">
+                   <div 
+                     className="h-full bg-[#FFB6C1] transition-all duration-1000 ease-out rounded-full"
+                     style={{ width: `${progressPercentage}%` }}
+                   />
+                 </div>
+                 <div className="flex justify-between w-full mt-2 text-[10px] text-gray-400 font-mono tracking-widest">
+                   <span>PROGRESS</span>
+                   <span>{scratchedIds.length} / {CARDS.length}</span>
+                 </div>
+              </div>
+            </header>
+
+            {/* Cards Grid */}
+            <main className="flex-grow px-4 md:px-8 max-w-[1100px] mx-auto w-full pb-24 relative z-10">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
+                {CARDS.map((card) => (
+                  <ScratchCard 
+                    key={card.id} 
+                    data={card} 
+                    isRevealed={scratchedIds.includes(card.id)}
+                    onReveal={handleReveal}
+                  />
+                ))}
+              </div>
+            </main>
+
+            {/* Footer */}
+            <footer className="py-12 text-center text-[10px] uppercase tracking-widest text-gray-400 relative z-10">
+              <p>made with love for aaradhya</p>
+            </footer>
+
+            {/* Final Message Modal */}
+            {showFinalModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+                <div className="absolute inset-0 bg-[#FDFBF7]/90 animate-fade-in backdrop-blur-sm" />
+                
+                <div className="relative bg-white max-w-xl w-full p-10 md:p-14 shadow-[0_20px_60px_rgba(0,0,0,0.08)] animate-scale-in text-center mx-auto border border-[#F0F0F0] rounded-sm">
+                  
+                  <h2 className="text-3xl md:text-4xl font-serif-display italic mb-8 text-[#1A1A1A]">
+                    {FINAL_MESSAGE_TITLE}
+                  </h2>
+                  
+                  <div className="space-y-6 text-lg md:text-2xl text-gray-700 font-serif-elegant leading-relaxed lowercase whitespace-pre-wrap">
+                     {FINAL_MESSAGE_BODY}
+                  </div>
+
+                  <div className="mt-12">
+                      <button 
+                      onClick={() => setShowFinalModal(false)}
+                      className="group relative px-8 py-3 overflow-hidden rounded-full bg-black text-white text-xs uppercase tracking-widest transition-all duration-300 hover:bg-[#FFB6C1] hover:text-black hover:shadow-lg hover:shadow-pink-100"
+                      >
+                      <span className="relative z-10">Close Message</span>
+                      </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      };
+
+      // Mount App
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+</body>
+</html>
